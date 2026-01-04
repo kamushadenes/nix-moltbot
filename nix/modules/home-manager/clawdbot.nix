@@ -529,11 +529,12 @@ let
         plugins = resolvedPluginsByInstance.${instName} or [];
         envFor = p: (p.config.env or {});
         missingFor = p:
-          lib.filter (req: !(envFor p ? req)) p.needs.requiredEnv;
+          lib.filter (req: !(builtins.hasAttr req (envFor p))) p.needs.requiredEnv;
         configMissingStateDir = p:
           (p.config.settings or {}) != {} && (p.needs.stateDirs or []) == [];
         mkAssertion = p:
-          let missing = missingFor p;
+          let
+            missing = missingFor p;
           in {
             assertion = missing == [];
             message = "programs.clawdbot.instances.${instName}: plugin ${p.name} missing required env: ${lib.concatStringsSep ", " missing}";
