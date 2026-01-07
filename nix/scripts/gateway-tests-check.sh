@@ -10,6 +10,18 @@ if [ -f "$store_path_file" ]; then
   export NPM_CONFIG_STORE_PATH="$store_path"
 fi
 export HOME="$(mktemp -d)"
+export TMPDIR="${HOME}/tmp"
+mkdir -p "$TMPDIR"
+export CLAWDBOT_LOG_DIR="${TMPDIR}/clawdbot-logs"
+export CLAWDBOT_LOG_PATH="${CLAWDBOT_LOG_DIR}/clawdbot-gateway.log"
+mkdir -p "$CLAWDBOT_LOG_DIR"
+mkdir -p /tmp/clawdbot || true
+chmod 700 /tmp/clawdbot || true
+export VITEST_POOL="threads"
+export VITEST_MIN_THREADS="1"
+export VITEST_MAX_THREADS="1"
+export VITEST_MIN_WORKERS="1"
+export VITEST_MAX_WORKERS="1"
 
 pnpm lint
 pnpm test

@@ -217,6 +217,20 @@ let
         description = "launchd label for this instance.";
       };
 
+      systemd.enable = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "Run Clawdbot gateway via systemd user service (Linux).";
+      };
+
+      systemd.unitName = lib.mkOption {
+        type = lib.types.str;
+        default = if name == "default"
+          then "clawdbot-gateway"
+          else "clawdbot-gateway-${name}";
+        description = "systemd user service unit name for this instance.";
+      };
+
       app.install.enable = lib.mkOption {
         type = lib.types.bool;
         default = false;
@@ -262,6 +276,7 @@ let
     providers = cfg.providers;
     routing = cfg.routing;
     launchd = cfg.launchd;
+    systemd = cfg.systemd;
     plugins = cfg.plugins;
     configOverrides = {};
     appDefaults = {
@@ -736,6 +751,34 @@ let
     };
     };
 
+    systemdService = lib.optionalAttrs (pkgs.stdenv.hostPlatform.isLinux && inst.systemd.enable) {
+      "${inst.systemd.unitName}" = {
+        Unit = {
+          Description = "Clawdbot gateway (${name})";
+        };
+        Service = {
+          ExecStart = "${gatewayWrapper}/bin/clawdbot-gateway-${name} gateway --port ${toString inst.gatewayPort}";
+          WorkingDirectory = inst.stateDir;
+          Restart = "always";
+          RestartSec = "1s";
+          Environment = [
+            "HOME=${homeDir}"
+            "CLAWDBOT_CONFIG_PATH=${inst.configPath}"
+            "CLAWDBOT_STATE_DIR=${inst.stateDir}"
+            "CLAWDBOT_NIX_MODE=1"
+            "CLAWDIS_CONFIG_PATH=${inst.configPath}"
+            "CLAWDIS_STATE_DIR=${inst.stateDir}"
+            "CLAWDIS_NIX_MODE=1"
+          ];
+          StandardOutput = "append:${inst.logPath}";
+          StandardError = "append:${inst.logPath}";
+        };
+        Install = {
+          WantedBy = [ "default.target" ];
+        };
+      };
+    };
+
     appDefaults = lib.optionalAttrs (pkgs.stdenv.hostPlatform.isDarwin && inst.appDefaults.enable) {
       attachExistingOnly = inst.appDefaults.attachExistingOnly;
       gatewayPort = inst.gatewayPort;
@@ -996,6 +1039,12 @@ in {
       description = "Run Clawdbot gateway via launchd (macOS).";
     };
 
+    systemd.enable = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Run Clawdbot gateway via systemd user service (Linux).";
+    };
+
     instances = lib.mkOption {
       type = lib.types.attrsOf (lib.types.submodule instanceModule);
       default = {};
@@ -1070,6 +1119,10 @@ in {
       lib.hm.dag.entryAfter [ "linkGeneration" ] ''
         /usr/bin/env bash ${./clawdbot-launchd-relink.sh}
       ''
+    );
+
+    systemd.user.services = lib.mkIf pkgs.stdenv.hostPlatform.isLinux (
+      lib.mkMerge (map (item: item.systemdService) instanceConfigs)
     );
 
     launchd.agents = lib.mkMerge (map (item: item.launchdAgent) instanceConfigs);

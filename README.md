@@ -2,7 +2,7 @@
 
 > Declarative Clawdbot. Bulletproof by default.
 >
-> macOS only. Linux/Windows are out of scope for now.
+> macOS + Linux (headless). Windows is out of scope for now.
 >
 > <sub>Questions? Join the Clawdbot Discord and ask in **#nix-packaging**: https://discord.com/channels/1456350064065904867/1457003026412736537</sub>
 
@@ -35,9 +35,9 @@ Me: "transcribe this voice note"
 Bot: *runs whisper, sends you text*
 ```
 
-You talk to Telegram, your Mac does things.
+You talk to Telegram, your machine does things.
 
-**One flake, everything works.** Gateway, macOS app, whisper, spotify, camera tools - all wired up and pinned.
+**One flake, everything works.** Gateway + tools everywhere; macOS app on macOS.
 
 **Plugins are self-contained.** Each plugin declares its CLI tools in Nix. You enable it, the build and wiring happens automatically.
 
@@ -47,15 +47,12 @@ You talk to Telegram, your Mac does things.
 
 ## Requirements
 
-1. **macOS** (Apple Silicon or Intel)
+1. **macOS** (Apple Silicon or Intel) or **Linux** (x86_64)
 2. **[Determinate Nix](https://docs.determinate.systems/determinate-nix/)** installed on your machine
 
 That's it. The Quick Start will guide you through everything else.
 
-> **Don't have Nix yet?** The [Quick Start](#quick-start) agent copypasta will install it for you, or you can run:
-> ```bash
-> curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
-> ```
+> **Don't have Nix yet?** Follow the Determinate Nix install guide, then come back here.
 
 ---
 
@@ -72,7 +69,7 @@ You've probably installed tools before. Homebrew, pip, npm - they work until the
 **What Nix gives you:**
 - Every dependency pinned to exact versions. Forever.
 - Update breaks something? `home-manager switch --rollback` - back in 30 seconds.
-- Share your config file, get the exact same setup on another Mac.
+- Share your config file, get the exact same setup on another machine.
 - **Plugins just work.** Add a GitHub URL, run one command, done. Nix handles the build, dependencies, and wiring.
 - Tools don't pollute your system - they live in isolation.
 
@@ -101,93 +98,60 @@ Nix is a **declarative package manager**. Instead of running commands to install
 
 ## Quick Start
 
-### Option 1: Let your agent set it up (recommended)
+### macOS (Home Manager + launchd)
 
-Copy this entire block and paste it to Claude, Cursor, or your preferred AI assistant:
-
-```text
-I want to set up nix-clawdbot on my Mac.
-
-Repository: github:clawdbot/nix-clawdbot
-
-What nix-clawdbot is:
-- Batteries-included Nix package for Clawdbot (AI assistant gateway)
-- Installs gateway + macOS app + tools (whisper, spotify, cameras, etc)
-- Runs as a launchd service, survives reboots
-
-What I need you to do:
-1. Check if Determinate Nix is installed (if not, install it)
-2. Create a local flake at ~/code/clawdbot-local using templates/agent-first/flake.nix
-3. Create a docs dir next to the config (e.g., ~/code/clawdbot-local/documents) with AGENTS.md, SOUL.md, TOOLS.md
-   - If ~/.clawdbot/workspace already has these files, adopt them into the documents dir first
-3. Help me create a Telegram bot (@BotFather) and get my chat ID (@userinfobot)
-4. Set up secrets (bot token, Anthropic key) - plain files at ~/.secrets/ is fine
-5. Fill in the template placeholders and run home-manager switch
-6. Verify: launchd running, bot responds to messages
-
-My setup:
-- macOS version: [FILL IN]
-- CPU: [arm64 / x86_64]
-- Home Manager config name: [FILL IN or "I don't have Home Manager yet"]
-
-Reference the README and templates/agent-first/flake.nix in the repo for the module options.
-```
-
-Your agent will install Nix, create your config, and get Clawdbot running. You just answer its questions.
-
-**What happens next:**
-1. Your agent sets everything up and runs `home-manager switch`
-2. You message your Telegram bot for the first time
-3. Clawdbot runs its **bootstrap ritual** - it asks you playful questions: *"Who am I? What am I? Who are you?"* - to learn its identity and yours
-4. Once you've named it and introduced yourself, the bootstrap is done. You're up and running.
-
-<details>
-<summary><strong>Option 2: Manual setup</strong></summary>
-
-If you prefer to understand each step:
-
-1. **Install Determinate Nix** (if you haven't already):
-   ```bash
-   curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
-   ```
-
-2. **Create your local config directory:**
+1. Install Determinate Nix.
+2. Create a local config:
    ```bash
    mkdir -p ~/code/clawdbot-local && cd ~/code/clawdbot-local
-   ```
-
-3. **Copy the starter template:**
-   ```bash
    nix flake init -t github:clawdbot/nix-clawdbot#agent-first
    ```
-
-4. **Fill in the placeholders** in `flake.nix`:
-   - Your macOS username (`whoami`)
-   - Your system (`aarch64-darwin` for Apple Silicon, `x86_64-darwin` for Intel)
-   - Paths to your secrets (Telegram bot token, Anthropic API key)
-   - Your Telegram user ID (get it from @userinfobot)
-
-5. **Apply the config:**
+3. Edit `flake.nix` placeholders:
+   - `system` = `aarch64-darwin` (Apple Silicon) or `x86_64-darwin` (Intel)
+   - `home.username` and `home.homeDirectory`
+   - `programs.clawdbot.documents` with `AGENTS.md`, `SOUL.md`, `TOOLS.md`
+   - Provider secrets (Telegram/Discord tokens, Anthropic API key)
+4. Apply:
    ```bash
-   home-manager switch --flake .#yourusername
+   home-manager switch --flake .#<user>
    ```
-
-6. **Verify it's running:**
+5. Verify:
    ```bash
    launchctl print gui/$UID/com.steipete.clawdbot.gateway | grep state
    ```
 
-</details>
+### Linux (headless + systemd user service)
+
+1. Install Determinate Nix.
+2. Create a local config:
+   ```bash
+   mkdir -p ~/code/clawdbot-local && cd ~/code/clawdbot-local
+   nix flake init -t github:clawdbot/nix-clawdbot#agent-first
+   ```
+3. Edit `flake.nix` placeholders:
+   - `system` = `x86_64-linux`
+   - `home.username` and `home.homeDirectory` (e.g., `/home/<user>`)
+   - `programs.clawdbot.documents` with `AGENTS.md`, `SOUL.md`, `TOOLS.md`
+   - Provider secrets (Telegram/Discord tokens, Anthropic API key)
+4. Apply:
+   ```bash
+   home-manager switch --flake .#<user>
+   ```
+5. Verify:
+   ```bash
+   systemctl --user status clawdbot-gateway
+   journalctl --user -u clawdbot-gateway -f
+   ```
 
 ---
 
 ## How It Works
 
 ```
-You (Telegram) --> Gateway --> Tools --> Your Mac does things
+You (Telegram/Discord) --> Gateway --> Tools --> Your machine does things
 ```
 
-**Gateway**: The brain. A service running on your Mac that receives your Telegram messages and decides what to do. Managed by launchd (macOS's built-in service manager) so it survives reboots.
+**Gateway**: The brain. A service running on your machine that receives messages and decides what to do. Managed by launchd on macOS and a systemd user service on Linux.
 
 **Plugins**: Bundles that contain two things:
 1. **CLI tools** - actual programs that do stuff (take screenshots, control Spotify, transcribe audio)
@@ -208,8 +172,8 @@ When you run `home-manager switch`:
    - What skill files to copy
    - What environment variables it needs
 3. Tools go on your PATH, skills get symlinked to `~/.clawdbot/workspace/skills/`
-4. A launchd service is created/updated to run the gateway
-5. The gateway starts, loads skills, connects to Telegram
+4. A launchd (macOS) or systemd user service (Linux) is created/updated to run the gateway
+5. The gateway starts, loads skills, connects to your providers
 
 All state lives in `~/.clawdbot/`. Logs at `/tmp/clawdbot/clawdbot-gateway.log`.
 
@@ -232,7 +196,7 @@ programs.clawdbot.firstParty = {
   summarize.enable = true;   # Summarize web pages, PDFs, videos
   peekaboo.enable = true;    # Take screenshots
   oracle.enable = false;     # Web search
-  poltergeist.enable = false; # Control your Mac's UI
+  poltergeist.enable = false; # Control your macOS UI
   sag.enable = false;        # Text-to-speech
   camsnap.enable = false;    # Camera snapshots
   gogcli.enable = false;     # Google Calendar
@@ -616,23 +580,19 @@ Plugins are keyed by their declared `name`. If two plugins declare the same name
 
 **Goal:** `nix-clawdbot` is a great Nix package. Automation, promotion, and fleet rollout live elsewhere.
 
-### Stable vs Canary
+### Stable only (for now)
 
-We ship two pins:
+We ship a single pinned upstream commit:
 - **Stable**: last known-good pin. This is the default.
-- **Canary**: auto-updated to upstream commits (throttled to max once every 10 minutes).
 
 Outputs:
 ```
-.#clawdbot-stable
-.#clawdbot-gateway-stable
-.#clawdbot-canary
-.#clawdbot-gateway-canary
+.#clawdbot
+.#clawdbot-gateway
 ```
 
-Pins live in:
-- `nix/sources/clawdbot-source.nix` (stable)
-- `nix/sources/clawdbot-source-canary.nix` (canary)
+Pin lives in:
+- `nix/sources/clawdbot-source.nix`
 
 ### Responsibilities (who owns what)
 
@@ -642,13 +602,11 @@ Pins live in:
 
 ### Automated pipeline (no manual steps)
 
-1) **clawdinators updater** bumps the canary pin (every commit, throttled to 10 minutes).  
+1) **clawdinators updater** proposes a new stable pin.  
 2) **Garnix** builds/tests the package (`pnpm test`).  
 3) **clawdinators smoke test** runs against real Discord in `#clawdinators-test`.  
-4) If green → auto‑promote canary to stable.  
-5) If red → stable stays pinned; canary keeps moving.
-
-This keeps stable always working while tracking upstream fast.
+4) If green → promote to stable.  
+5) If red → keep current stable pin.
 
 ---
 
@@ -657,14 +615,23 @@ This keeps stable always working while tracking upstream fast.
 ### Commands
 
 ```bash
-# Check service
+# macOS: check service
 launchctl print gui/$UID/com.steipete.clawdbot.gateway | grep state
 
-# View logs
+# macOS: view logs
 tail -50 /tmp/clawdbot/clawdbot-gateway.log
 
-# Restart
+# macOS: restart
 launchctl kickstart -k gui/$UID/com.steipete.clawdbot.gateway
+
+# Linux: check service
+systemctl --user status clawdbot-gateway
+
+# Linux: view logs
+journalctl --user -u clawdbot-gateway -f
+
+# Linux: restart
+systemctl --user restart clawdbot-gateway
 
 # Rollback
 home-manager generations  # list
@@ -688,7 +655,7 @@ home-manager switch --rollback  # revert
 | --- | --- | --- |
 | Gateway binary | ✓ | |
 | macOS app | ✓ | |
-| Launchd service | ✓ | |
+| Service (launchd/systemd) | ✓ | |
 | Tools (whisper, etc) | ✓ | |
 | Telegram bot token | | ✓ |
 | Anthropic API key | | ✓ |

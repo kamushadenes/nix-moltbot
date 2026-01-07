@@ -10,11 +10,11 @@
 
   outputs = { self, nixpkgs, home-manager, nix-clawdbot }:
     let
-      # REPLACE: aarch64-darwin (Apple Silicon) or x86_64-darwin (Intel)
+      # REPLACE: aarch64-darwin (Apple Silicon), x86_64-darwin (Intel), or x86_64-linux
       system = "<system>";
       pkgs = import nixpkgs { inherit system; overlays = [ nix-clawdbot.overlays.default ]; };
     in {
-      # REPLACE: <user> with your macOS username (run `whoami`)
+      # REPLACE: <user> with your username (run `whoami`)
       homeConfigurations."<user>" = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
         modules = [
@@ -22,7 +22,8 @@
           {
             # Required for Home Manager standalone
             home.username = "<user>";
-            home.homeDirectory = "/Users/<user>";
+            # REPLACE: /Users/<user> on macOS or /home/<user> on Linux
+            home.homeDirectory = "<homeDir>";
             home.stateVersion = "24.11";
             programs.home-manager.enable = true;
 

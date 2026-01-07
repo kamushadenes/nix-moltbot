@@ -4,6 +4,7 @@
 , fetchurl
 , nodejs_22
 , pnpm_10
+, bun
 , pkg-config
 , jq
 , python3
@@ -52,6 +53,7 @@ stdenv.mkDerivation (finalAttrs: {
   nativeBuildInputs = [
     nodejs_22
     pnpm_10
+    bun
     pkg-config
     jq
     python3
