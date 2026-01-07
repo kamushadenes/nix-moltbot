@@ -1,5 +1,5 @@
-#!/usr/bin/env bash
-set -euo pipefail
+#!/bin/sh
+set -eu
 
 path="${1:-}"
 if [ -z "$path" ] || [ ! -f "$path" ]; then

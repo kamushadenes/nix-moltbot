@@ -1,13 +1,13 @@
-#!/usr/bin/env bash
-set -euo pipefail
+#!/bin/sh
+set -eu
 
 store_path="${1:-}"
 if [ -z "$store_path" ] || [ ! -d "$store_path" ]; then
   exit 0
 fi
 
-find "$store_path" -name "integrity-not-built.json" -print0 \
-  | while IFS= read -r -d "" file; do
+find "$store_path" -name "integrity-not-built.json" \
+  | while IFS= read -r file; do
       if jq -e '.requiresBuild == true' "$file" >/dev/null; then
         continue
       fi
