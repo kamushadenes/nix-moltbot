@@ -1183,6 +1183,9 @@ in
           allow = lib.mkOption {
             type = t.bool;
           };
+          autoThread = lib.mkOption {
+            type = t.bool;
+          };
           enabled = lib.mkOption {
             type = t.bool;
           };
@@ -1361,6 +1364,9 @@ in
       channels = lib.mkOption {
         type = t.attrsOf (t.submodule { options = {
         allow = lib.mkOption {
+          type = t.bool;
+        };
+        autoThread = lib.mkOption {
           type = t.bool;
         };
         enabled = lib.mkOption {
