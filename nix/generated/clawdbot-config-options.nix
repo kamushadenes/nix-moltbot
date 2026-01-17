@@ -3904,8 +3904,27 @@ in
           };
         }; };
         };
+        baseUrl = lib.mkOption {
+          type = t.str;
+        };
+        deepgram = lib.mkOption {
+          type = t.submodule { options = {
+          detectLanguage = lib.mkOption {
+            type = t.bool;
+          };
+          punctuate = lib.mkOption {
+            type = t.bool;
+          };
+          smartFormat = lib.mkOption {
+            type = t.bool;
+          };
+        }; };
+        };
         enabled = lib.mkOption {
           type = t.bool;
+        };
+        headers = lib.mkOption {
+          type = t.attrsOf (t.str);
         };
         language = lib.mkOption {
           type = t.str;
@@ -3921,11 +3940,30 @@ in
           args = lib.mkOption {
             type = t.listOf (t.str);
           };
+          baseUrl = lib.mkOption {
+            type = t.str;
+          };
           capabilities = lib.mkOption {
             type = t.listOf (t.oneOf [ t.enum [ "image" ] t.enum [ "audio" ] t.enum [ "video" ] ]);
           };
           command = lib.mkOption {
             type = t.str;
+          };
+          deepgram = lib.mkOption {
+            type = t.submodule { options = {
+            detectLanguage = lib.mkOption {
+              type = t.bool;
+            };
+            punctuate = lib.mkOption {
+              type = t.bool;
+            };
+            smartFormat = lib.mkOption {
+              type = t.bool;
+            };
+          }; };
+          };
+          headers = lib.mkOption {
+            type = t.attrsOf (t.str);
           };
           language = lib.mkOption {
             type = t.str;
@@ -3951,6 +3989,9 @@ in
           provider = lib.mkOption {
             type = t.str;
           };
+          providerOptions = lib.mkOption {
+            type = t.attrsOf (t.attrsOf (t.oneOf [ t.str t.number t.bool ]));
+          };
           timeoutSeconds = lib.mkOption {
             type = t.int;
           };
@@ -3961,6 +4002,9 @@ in
         };
         prompt = lib.mkOption {
           type = t.str;
+        };
+        providerOptions = lib.mkOption {
+          type = t.attrsOf (t.attrsOf (t.oneOf [ t.str t.number t.bool ]));
         };
         scope = lib.mkOption {
           type = t.submodule { options = {
@@ -4012,8 +4056,27 @@ in
           };
         }; };
         };
+        baseUrl = lib.mkOption {
+          type = t.str;
+        };
+        deepgram = lib.mkOption {
+          type = t.submodule { options = {
+          detectLanguage = lib.mkOption {
+            type = t.bool;
+          };
+          punctuate = lib.mkOption {
+            type = t.bool;
+          };
+          smartFormat = lib.mkOption {
+            type = t.bool;
+          };
+        }; };
+        };
         enabled = lib.mkOption {
           type = t.bool;
+        };
+        headers = lib.mkOption {
+          type = t.attrsOf (t.str);
         };
         language = lib.mkOption {
           type = t.str;
@@ -4029,11 +4092,30 @@ in
           args = lib.mkOption {
             type = t.listOf (t.str);
           };
+          baseUrl = lib.mkOption {
+            type = t.str;
+          };
           capabilities = lib.mkOption {
             type = t.listOf (t.oneOf [ t.enum [ "image" ] t.enum [ "audio" ] t.enum [ "video" ] ]);
           };
           command = lib.mkOption {
             type = t.str;
+          };
+          deepgram = lib.mkOption {
+            type = t.submodule { options = {
+            detectLanguage = lib.mkOption {
+              type = t.bool;
+            };
+            punctuate = lib.mkOption {
+              type = t.bool;
+            };
+            smartFormat = lib.mkOption {
+              type = t.bool;
+            };
+          }; };
+          };
+          headers = lib.mkOption {
+            type = t.attrsOf (t.str);
           };
           language = lib.mkOption {
             type = t.str;
@@ -4059,6 +4141,9 @@ in
           provider = lib.mkOption {
             type = t.str;
           };
+          providerOptions = lib.mkOption {
+            type = t.attrsOf (t.attrsOf (t.oneOf [ t.str t.number t.bool ]));
+          };
           timeoutSeconds = lib.mkOption {
             type = t.int;
           };
@@ -4069,6 +4154,9 @@ in
         };
         prompt = lib.mkOption {
           type = t.str;
+        };
+        providerOptions = lib.mkOption {
+          type = t.attrsOf (t.attrsOf (t.oneOf [ t.str t.number t.bool ]));
         };
         scope = lib.mkOption {
           type = t.submodule { options = {
@@ -4107,11 +4195,30 @@ in
         args = lib.mkOption {
           type = t.listOf (t.str);
         };
+        baseUrl = lib.mkOption {
+          type = t.str;
+        };
         capabilities = lib.mkOption {
           type = t.listOf (t.oneOf [ t.enum [ "image" ] t.enum [ "audio" ] t.enum [ "video" ] ]);
         };
         command = lib.mkOption {
           type = t.str;
+        };
+        deepgram = lib.mkOption {
+          type = t.submodule { options = {
+          detectLanguage = lib.mkOption {
+            type = t.bool;
+          };
+          punctuate = lib.mkOption {
+            type = t.bool;
+          };
+          smartFormat = lib.mkOption {
+            type = t.bool;
+          };
+        }; };
+        };
+        headers = lib.mkOption {
+          type = t.attrsOf (t.str);
         };
         language = lib.mkOption {
           type = t.str;
@@ -4137,6 +4244,9 @@ in
         provider = lib.mkOption {
           type = t.str;
         };
+        providerOptions = lib.mkOption {
+          type = t.attrsOf (t.attrsOf (t.oneOf [ t.str t.number t.bool ]));
+        };
         timeoutSeconds = lib.mkOption {
           type = t.int;
         };
@@ -4160,8 +4270,27 @@ in
           };
         }; };
         };
+        baseUrl = lib.mkOption {
+          type = t.str;
+        };
+        deepgram = lib.mkOption {
+          type = t.submodule { options = {
+          detectLanguage = lib.mkOption {
+            type = t.bool;
+          };
+          punctuate = lib.mkOption {
+            type = t.bool;
+          };
+          smartFormat = lib.mkOption {
+            type = t.bool;
+          };
+        }; };
+        };
         enabled = lib.mkOption {
           type = t.bool;
+        };
+        headers = lib.mkOption {
+          type = t.attrsOf (t.str);
         };
         language = lib.mkOption {
           type = t.str;
@@ -4177,11 +4306,30 @@ in
           args = lib.mkOption {
             type = t.listOf (t.str);
           };
+          baseUrl = lib.mkOption {
+            type = t.str;
+          };
           capabilities = lib.mkOption {
             type = t.listOf (t.oneOf [ t.enum [ "image" ] t.enum [ "audio" ] t.enum [ "video" ] ]);
           };
           command = lib.mkOption {
             type = t.str;
+          };
+          deepgram = lib.mkOption {
+            type = t.submodule { options = {
+            detectLanguage = lib.mkOption {
+              type = t.bool;
+            };
+            punctuate = lib.mkOption {
+              type = t.bool;
+            };
+            smartFormat = lib.mkOption {
+              type = t.bool;
+            };
+          }; };
+          };
+          headers = lib.mkOption {
+            type = t.attrsOf (t.str);
           };
           language = lib.mkOption {
             type = t.str;
@@ -4207,6 +4355,9 @@ in
           provider = lib.mkOption {
             type = t.str;
           };
+          providerOptions = lib.mkOption {
+            type = t.attrsOf (t.attrsOf (t.oneOf [ t.str t.number t.bool ]));
+          };
           timeoutSeconds = lib.mkOption {
             type = t.int;
           };
@@ -4217,6 +4368,9 @@ in
         };
         prompt = lib.mkOption {
           type = t.str;
+        };
+        providerOptions = lib.mkOption {
+          type = t.attrsOf (t.attrsOf (t.oneOf [ t.str t.number t.bool ]));
         };
         scope = lib.mkOption {
           type = t.submodule { options = {
