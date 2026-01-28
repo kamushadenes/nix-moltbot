@@ -33,8 +33,7 @@ let
         }
       ];
     };
-    # Explicitly set empty slots to prevent moltbot from expecting default plugins
-    plugins.slots = {};
+    # Don't set plugins.slots - let moltbot handle defaults or skip validation
   };
 
   mkTelegramConfig = inst: lib.optionalAttrs inst.providers.telegram.enable {
