@@ -12,7 +12,7 @@ in
 buildEnv {
   name = "moltbot-2.0.0-beta5";
   paths = [ moltbot-gateway ] ++ appPaths ++ extendedTools;
-  pathsToLink = [ "/bin" ] ++ appLinks;
+  pathsToLink = [ "/bin" "/lib" ] ++ appLinks;
 
   meta = with lib; {
     description = "Moltbot batteries-included bundle (gateway + app + tools)";
