@@ -194,6 +194,12 @@ let
         };
       };
 
+      gateway.tokenFile = lib.mkOption {
+        type = lib.types.str;
+        default = "";
+        description = "Path to gateway auth token file (used to set CLAWDBOT_GATEWAY_TOKEN).";
+      };
+
       agent = {
         model = lib.mkOption {
           type = lib.types.str;
@@ -304,6 +310,7 @@ let
     logPath = "/tmp/moltbot/moltbot-gateway.log";
     gatewayPort = 18789;
     providers = cfg.providers;
+    gateway = cfg.gateway;
     routing = cfg.routing;
     launchd = cfg.launchd;
     systemd = cfg.systemd;
@@ -759,6 +766,19 @@ let
         export ANTHROPIC_API_KEY
       fi
 
+      if [ -n "${inst.gateway.tokenFile}" ]; then
+        if [ ! -f "${inst.gateway.tokenFile}" ]; then
+          echo "Gateway token file not found: ${inst.gateway.tokenFile}" >&2
+          exit 1
+        fi
+        CLAWDBOT_GATEWAY_TOKEN="$(cat "${inst.gateway.tokenFile}")"
+        if [ -z "$CLAWDBOT_GATEWAY_TOKEN" ]; then
+          echo "Gateway token file is empty: ${inst.gateway.tokenFile}" >&2
+          exit 1
+        fi
+        export CLAWDBOT_GATEWAY_TOKEN
+      fi
+
       exec "${gatewayPackage}/bin/moltbot" "$@"
     '';
   in {
@@ -1076,6 +1096,12 @@ in {
         default = "";
         description = "Path to Anthropic API key file (used to set ANTHROPIC_API_KEY).";
       };
+    };
+
+    gateway.tokenFile = lib.mkOption {
+      type = lib.types.str;
+      default = "";
+      description = "Path to gateway auth token file (used to set CLAWDBOT_GATEWAY_TOKEN).";
     };
 
     routing.queue = {
