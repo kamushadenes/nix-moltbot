@@ -33,14 +33,18 @@ let
         }
       ];
     };
+    # Explicitly set empty slots to prevent moltbot from expecting default plugins
+    plugins.slots = {};
   };
 
   mkTelegramConfig = inst: lib.optionalAttrs inst.providers.telegram.enable {
-    telegram = {
-      enabled = true;
-      tokenFile = inst.providers.telegram.botTokenFile;
-      allowFrom = inst.providers.telegram.allowFrom;
-      groups = inst.providers.telegram.groups;
+    channels = {
+      telegram = {
+        enabled = true;
+        tokenFile = inst.providers.telegram.botTokenFile;
+        allowFrom = inst.providers.telegram.allowFrom;
+        groups = inst.providers.telegram.groups;
+      };
     };
   };
 
@@ -48,7 +52,7 @@ let
     messages = {
       queue = {
         mode = inst.routing.queue.mode;
-        byProvider = inst.routing.queue.byProvider;
+        byChannel = inst.routing.queue.byChannel;
       };
     };
   };
@@ -211,14 +215,14 @@ let
           description = "Queue mode when a run is active.";
         };
 
-        byProvider = lib.mkOption {
+        byChannel = lib.mkOption {
           type = lib.types.attrs;
           default = {
             telegram = "interrupt";
             discord = "queue";
             webchat = "queue";
           };
-          description = "Per-provider queue mode overrides.";
+          description = "Per-channel queue mode overrides.";
         };
       };
 
@@ -1082,14 +1086,14 @@ in {
         description = "Queue mode when a run is active.";
       };
 
-      byProvider = lib.mkOption {
+      byChannel = lib.mkOption {
         type = lib.types.attrs;
         default = {
           telegram = "interrupt";
           discord = "queue";
           webchat = "queue";
         };
-        description = "Per-provider queue mode overrides.";
+        description = "Per-channel queue mode overrides.";
       };
     };
 
